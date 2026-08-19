@@ -1,0 +1,30 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, Max, Min } from 'class-validator';
+
+/**
+ * Pagination convention for future list endpoints (Step 6). No endpoint
+ * uses this yet in Phase 0A — it exists so every later list endpoint
+ * (courses, resources, announcements, ...) paginates the same way instead
+ * of each module inventing its own page/limit shape.
+ */
+export class PaginationQueryDto {
+  @ApiPropertyOptional({ minimum: 1, default: 1 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page: number = 1;
+
+  @ApiPropertyOptional({ minimum: 1, maximum: 100, default: 20 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit: number = 20;
+
+  get skip(): number {
+    return (this.page - 1) * this.limit;
+  }
+}
